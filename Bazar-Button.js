@@ -9,14 +9,13 @@
 // @namespace    https://greasyfork.org/users/18375
 // ==/UserScript==
 
-var pagingElement = document.querySelector("div.paging").lastElementChild;
 
 if (document.querySelector('.second_li') && document.querySelector('.first_li').className.includes('selected')) {
+    var lastPagingElement = document.querySelector("div.paging").lastElementChild;
     var element = document.querySelector("div.blueBox").children[1];
-
     var refreshButt = createHTMLElement('button', null, 'refreshButton', [{ n: 'style', v: 'margin-left:20px;height:35px;font-size:13px;transition: all 200ms linear' }]);
 
-    if (pagingElement.className.includes('disabled')) {
+    if (lastPagingElement.className.includes('disabled')) {
         refreshButt.textContent = 'ОБНОВИ ИЗТИЧАЩА';
         refreshButt.className = 'refresh';
     }
@@ -33,8 +32,9 @@ if (document.querySelector('.second_li') && document.querySelector('.first_li').
 }
 
 function refreshHandler(e) {
-    if (e.target.className === 'refresh') {
-        var button = e.target;
+    var button = e.target;
+    
+    if (button.className === 'refresh') {
         button.textContent = 'МОЛЯ ИЗЧАКАЙТЕ';
         var refreshButtons = document.querySelectorAll('.btnOferirai');
         var numToRefresh = Number(document.querySelector('.second_li span').textContent);
@@ -58,12 +58,12 @@ function refreshHandler(e) {
             });
         }
     }
-    else if (e.target.className === 'goToLast') {
+    else if (button.className === 'goToLast') {
         var numOfAds = document.querySelector('.first_li span').textContent;
         var lastPageNum = Math.ceil(numOfAds / 20);
         window.location.href = `https://bazar.bg/ads/my?page=${lastPageNum}`;
     }
-    else if (e.target.className === 'reload'){
+    else if (button.className === 'reload'){
         window.location.reload();
     }
 }
@@ -74,9 +74,9 @@ function createMessageBox() {
     element.appendChild(msgDiv);
 }
 
-function showMessage(numToRefresh) {
+function showMessage(numRefreshed) {
     var msgBox = document.querySelector('.msgBox');
-    msgBox.innerHTML = `${numToRefresh} обяви успешно обновени! Моля обновете страницата.`;
+    msgBox.innerHTML = `${numRefreshed} обяви успешно обновени! Моля обновете страницата.`;
     msgBox.style.display = 'inline';
     setTimeout(() => msgBox.style.opacity = '1', 50);
 }
