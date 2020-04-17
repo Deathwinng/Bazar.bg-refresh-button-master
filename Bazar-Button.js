@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bazar.bg бутон за обновяване
-// @version      2.1
+// @version      2.1.1
 // @description  Бутон, за лесно обновяване на изтичащи обяви.
 // @author       Deathwing
 // @include      https://bazar.bg/ads/my*
@@ -11,10 +11,10 @@
 
 var pagingElement = document.querySelector("div.paging").lastElementChild;
 
-if (document.querySelector('.second_li')) {
+if (document.querySelector('.second_li') && document.querySelector('.first_li').className.includes('selected')) {
     var element = document.querySelector("div.blueBox").children[1];
 
-    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{n:'style', v:'margin-left:20px;height:35px;font-size:13px;transition: all 200ms linear'}]);
+    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{ n: 'style', v: 'margin-left:20px;height:35px;font-size:13px;transition: all 200ms linear' }]);
 
     if (pagingElement.className.includes('disabled')) {
         refreshButt.textContent = 'ОБНОВИ ИЗТИЧАЩА';
@@ -35,8 +35,9 @@ if (document.querySelector('.second_li')) {
 function refreshHandler(e) {
     if (e.target.className === 'refresh') {
         var button = e.target;
+        button.textContent = 'МОЛЯ ИЗЧАКАЙТЕ';
         var refreshButtons = document.querySelectorAll('.btnOferirai');
-        var numToRefresh = document.querySelector('.second_li span').textContent;
+        var numToRefresh = Number(document.querySelector('.second_li span').textContent);
         var counter = 0;
 
         for (var i = refreshButtons.length - 1; i >= refreshButtons.length - numToRefresh; i--) {
@@ -45,10 +46,12 @@ function refreshHandler(e) {
                 url: refreshButtons[i].href,
                 onload: () => {
                     counter++;
+                    button.textContent = `${(counter / numToRefresh) * 100}%`;
                     if (counter === numToRefresh) {
                         showMessage(numToRefresh);
                         button.textContent = 'ОБНОВИ СТРАНИЦАТА';
                         button.style.background = '#fa7609';
+                        button.className = 'reload';
                         setTimeout(() => button.style.background = '#3b6fb6', 200);
                     }
                 }
@@ -59,6 +62,9 @@ function refreshHandler(e) {
         var numOfAds = document.querySelector('.first_li span').textContent;
         var lastPageNum = Math.ceil(numOfAds / 20);
         window.location.href = `https://bazar.bg/ads/my?page=${lastPageNum}`;
+    }
+    else if (e.target.className === 'reload'){
+        location.reload();
     }
 }
 
