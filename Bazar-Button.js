@@ -64,7 +64,7 @@ function refreshHandler(e) {
         window.location.href = `https://bazar.bg/ads/my?page=${lastPageNum}`;
     }
     else if (e.target.className === 'reload'){
-        location.reload();
+        window.location.reload();
     }
 }
 
