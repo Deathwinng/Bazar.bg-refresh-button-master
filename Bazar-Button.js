@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bazar.bg бутон за обновяване
-// @version      2.1.1
+// @version      2.11
 // @description  Бутон, за лесно обновяване на изтичащи обяви.
 // @author       Deathwing
 // @include      https://bazar.bg/ads/my*
