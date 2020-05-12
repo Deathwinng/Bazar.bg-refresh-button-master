@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bazar.bg бутон за обновяване
-// @version      2.11
+// @version      2.20
 // @description  Бутон, за лесно обновяване на изтичащи обяви.
 // @author       Deathwing
 // @include      https://bazar.bg/ads/my*
@@ -9,22 +9,34 @@
 // @namespace    https://greasyfork.org/users/18375
 // ==/UserScript==
 
+var expiringAds = false;
 
-if (document.querySelector('.second_li') && document.querySelector('.first_li').className.includes('selected')) {
+if (document.querySelector('.second_li')) {
+    expiringAds = true;
+}
+
+if (document.querySelector('.first_li').className.includes('selected')) {
     var lastPagingElement = document.querySelector("div.paging").lastElementChild;
-    var element = document.querySelector("div.blueBox").children[1];
-    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{ n: 'style', v: 'margin-left:20px;height:35px;font-size:13px;transition: all 200ms linear' }]);
+    lastPagingElement.id = 'lastPagingElement';
+    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{ n: 'style', v: 'margin-left:20px;height:35px;\
+        font-size:13px;transition: all 300ms linear' }]);
 
     if (lastPagingElement.className.includes('disabled')) {
-        refreshButt.textContent = 'ОБНОВИ ИЗТИЧАЩА';
-        refreshButt.className = 'refresh';
+        if (expiringAds) {
+            refreshButt.textContent = 'ОБНОВИ ИЗТИЧАЩИ';
+            refreshButt.className = 'refresh';
+        }
+        else {
+            refreshButt.textContent = 'ОТИДИ ДОЛУ';
+            refreshButt.className = 'goToBottom';
+        }
     }
     else {
         refreshButt.textContent = 'ПОСЛЕДНА СТРАНИЦА';
         refreshButt.className = 'goToLast';
     }
 
-    element.appendChild(refreshButt);
+    document.querySelector("div.blueBox").children[1].appendChild(refreshButt);
 
     createMessageBox();
 
@@ -33,7 +45,7 @@ if (document.querySelector('.second_li') && document.querySelector('.first_li').
 
 function refreshHandler(e) {
     var button = e.target;
-    
+
     if (button.className === 'refresh') {
         button.textContent = 'МОЛЯ ИЗЧАКАЙТЕ';
         var refreshButtons = document.querySelectorAll('.btnOferirai');
@@ -46,13 +58,14 @@ function refreshHandler(e) {
                 url: refreshButtons[i].href,
                 onload: () => {
                     counter++;
-                    button.textContent = `${(counter / numToRefresh) * 100}%`;
+                    button.style.backgroundImage = `linear-gradient(90deg, green ${(counter / numToRefresh) * 100}%, transparent 0%)`;
                     if (counter === numToRefresh) {
                         showMessage(numToRefresh);
                         button.textContent = 'ОБНОВИ СТРАНИЦАТА';
+                        button.style.backgroundImage = '';
                         button.style.background = '#fa7609';
                         button.className = 'reload';
-                        setTimeout(() => button.style.background = '#3b6fb6', 200);
+                        setTimeout(() => button.style.background = '#3b6fb6', 300);
                     }
                 }
             });
@@ -63,13 +76,18 @@ function refreshHandler(e) {
         var lastPageNum = Math.ceil(numOfAds / 20);
         window.location.href = `https://bazar.bg/ads/my?page=${lastPageNum}`;
     }
-    else if (button.className === 'reload'){
+    else if (button.className === 'goToBottom') {
+        window.scrollTo(0, 99999);
+    }
+    else if (button.className === 'reload') {
         window.location.reload();
     }
 }
 
 function createMessageBox() {
-    var msgDiv = createHTMLElement('div', null, 'msgBox', [{ n: 'style', v: 'height: 70px;width: 300px;padding: 20px;position: absolute;background-color: #fff;text-align: center;display: none;margin-left: 10px;box-shadow: #00000057 0px 0px 15px;font-weight: bold;border-radius: 5px;transition: all 300ms linear;opacity: 0;' }]);
+    var msgDiv = createHTMLElement('div', null, 'msgBox', [{ n: 'style', v: 'height: 70px;width: 300px;padding: 20px;\
+        position: absolute;background-color: #fff;text-align: center;display: none;margin-left: 10px;\
+        box-shadow: #00000057 0px 0px 15px;font-weight: bold;border-radius: 5px;transition: all 300ms linear;opacity: 0;' }]);
     var element = document.querySelector("div.blueBox").children[1];
     element.appendChild(msgDiv);
 }
