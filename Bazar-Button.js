@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bazar.bg бутон за обновяване
-// @version      2.20
+// @version      2.21
 // @description  Бутон, за лесно обновяване на изтичащи обяви.
 // @author       Deathwing
 // @include      https://bazar.bg/ads/my*
@@ -17,9 +17,13 @@ if (document.querySelector('.second_li')) {
 
 if (document.querySelector('.first_li').className.includes('selected')) {
     var lastPagingElement = document.querySelector("div.paging").lastElementChild;
-    lastPagingElement.id = 'lastPagingElement';
-    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{ n: 'style', v: 'margin-left:20px;height:35px;\
-        font-size:13px;transition: all 300ms linear' }]);
+    var refreshButt = createHTMLElement('button', null, 'refreshButton', [{
+        n: 'style', v: `
+        margin-left:20px;
+        height:35px;
+        font-size:13px;
+        transition: all 300ms linear`
+    }]);
 
     if (lastPagingElement.className.includes('disabled')) {
         if (expiringAds) {
@@ -38,8 +42,6 @@ if (document.querySelector('.first_li').className.includes('selected')) {
 
     document.querySelector("div.blueBox").children[1].appendChild(refreshButt);
 
-    createMessageBox();
-
     refreshButt.addEventListener('click', refreshHandler);
 }
 
@@ -48,9 +50,11 @@ function refreshHandler(e) {
 
     if (button.className === 'refresh') {
         button.textContent = 'МОЛЯ ИЗЧАКАЙТЕ';
-        var refreshButtons = document.querySelectorAll('.btnOferirai');
+        var refreshButtons = document.querySelectorAll('td .btnOferirai');
         var numToRefresh = Number(document.querySelector('.second_li span').textContent);
         var counter = 0;
+
+        createMessageBox();
 
         for (var i = refreshButtons.length - 1; i >= refreshButtons.length - numToRefresh; i--) {
             GM_xmlhttpRequest({
@@ -59,6 +63,7 @@ function refreshHandler(e) {
                 onload: () => {
                     counter++;
                     button.style.backgroundImage = `linear-gradient(90deg, green ${(counter / numToRefresh) * 100}%, transparent 0%)`;
+
                     if (counter === numToRefresh) {
                         showMessage(numToRefresh);
                         button.textContent = 'ОБНОВИ СТРАНИЦАТА';
@@ -85,9 +90,22 @@ function refreshHandler(e) {
 }
 
 function createMessageBox() {
-    var msgDiv = createHTMLElement('div', null, 'msgBox', [{ n: 'style', v: 'height: 70px;width: 300px;padding: 20px;\
-        position: absolute;background-color: #fff;text-align: center;display: none;margin-left: 10px;\
-        box-shadow: #00000057 0px 0px 15px;font-weight: bold;border-radius: 5px;transition: all 300ms linear;opacity: 0;' }]);
+    var msgDiv = createHTMLElement('div', null, 'msgBox', [{
+        n: 'style', v: `
+        height: 70px;
+        width: 300px;
+        padding: 20px;
+        position: absolute;
+        background-color: #fff;
+        text-align: center;
+        display: none;
+        margin-left: 10px;
+        box-shadow: #00000057 0px 0px 15px;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: all 300ms linear;
+        opacity: 0;`
+    }]);
     var element = document.querySelector("div.blueBox").children[1];
     element.appendChild(msgDiv);
 }
@@ -98,7 +116,6 @@ function showMessage(numRefreshed) {
     msgBox.style.display = 'inline';
     setTimeout(() => msgBox.style.opacity = '1', 50);
 }
-
 
 function createHTMLElement(tag, textContent, className, attributes) {
     var element = document.createElement(tag);
