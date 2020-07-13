@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bazar.bg бутон за обновяване
-// @version      2.21
+// @version      2.22
 // @description  Бутон, за лесно обновяване на изтичащи обяви.
 // @author       Deathwing
 // @include      https://bazar.bg/ads/my*
@@ -51,7 +51,7 @@ function refreshHandler(e) {
     if (button.className === 'refresh') {
         button.textContent = 'МОЛЯ ИЗЧАКАЙТЕ';
         var refreshButtons = document.querySelectorAll('td .btnOferirai');
-        var numToRefresh = Number(document.querySelector('.second_li span').textContent);
+        var numToRefresh = Math.min(Number(document.querySelector('.second_li span').textContent), refreshButtons.length);
         var counter = 0;
 
         createMessageBox();
