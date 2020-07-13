@@ -21,7 +21,7 @@ if (document.querySelector('.first_li').className.includes('selected')) {
         n: 'style', v: `
         margin-left:20px;
         height:35px;
-        font-size:13px;
+        font-size:13px; 
         transition: all 300ms linear`
     }]);
 
